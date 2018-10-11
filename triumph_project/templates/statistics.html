@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    Статистика
+{% endblock %}
+
+{% block content %}
+    <div class="stat-filters-container flex-center">
+        <div class="stat-filters-content">
+            {% if user.is_staff %}
+                <select class="styled-select" id="groups-selector">
+                    <option value="g_all">Все группы</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group }}</option>
+                    {% endfor %}
+                </select>
+
+                <select class="styled-select" id="students-selector">
+                    <option value="s_all">Все ученики</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            <input id="date_start" class="date-picker-input">
+            <input id="date_end" class="date-picker-input">
+
+            <input id="generate_stat" type="button" class="btn btn-primary outline" value="СФОРМИРОВАТЬ">
+
+        </div>
+    </div>
+
+    <div style="height: 100%; text-align: center">
+        <div class="stat-board">
+            {% if students %}
+                <table id="stat-table" class="stat-table">
+                    <tr>
+                        {% if user.is_staff %}
+                            <th colspan="1" rowspan="2">Ученик</th>
+                        {% endif %}
+                        <th colspan="1" rowspan="2">Начало сессии</th>
+                        <th colspan="1" rowspan="2">Конец сессии</th>
+                        <th colspan="3" style="border-bottom: none">Количество ответов</th>
+                        <th colspan="1" rowspan="2" style="border-right: none">% верных ответов</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Верные</th>
+                        <th>Неверные</th>
+                    </tr>
+                    {% for student in students %}
+                        <tr>
+                            {% if user.is_staff %}
+                                <td rowspan="{{ student.user_rows }}">{{ student.user_name }}</td>
+                            {% endif %}
+
+                            {% for session in student.sessions %}
+                                <td rowspan="{{ session.session_rows }}">{{ session.start_at }}</td>
+                                <td rowspan="{{ session.session_rows }}">{{ session.end_at }}</td>
+                                {% for theme in session.themes %}
+                                    <td style="border-bottom: none; background: rgba(255,255,255,0.20)">
+                                        <strong>{{ theme.theme.theme_name }}</strong></td>
+                                    <td style="border-bottom: none; background: rgba(255,255,255,0.20)">
+                                        <strong>{{ theme.theme.right_answers }}</strong>
+                                    </td>
+                                    <td style="border-bottom: none; background: rgba(255,255,255,0.20)">
+                                        <strong>{{ theme.theme.wrong_answers }}</strong>
+                                    </td>
+                                    <td style="border-right: none; border-bottom: none; background: rgba(255,255,255,0.20)">
+                                        <strong>{{ theme.theme.percent }}</strong></td>
+                                    {% for level in theme.theme.levels %}
+                                        <tr>
+                                            <td style="border-bottom: none">Уровень: {{ level.level }}</td>
+                                            <td style="border-bottom: none">{{ level.right_answers }}</td>
+                                            <td style="border-bottom: none">{{ level.wrong_answers }}</td>
+                                            <td style="border-right: none; border-bottom: none">{{ level.percent }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                                <tr>
+                                    <td style="border-top: 1px solid #fff;"><strong>Всего</strong></td>
+                                    <td style="border-top: 1px solid #fff;">
+                                        <strong>{{ session.total.total_right_answers }}</strong></td>
+                                    <td style="border-top: 1px solid #fff;">
+                                        <strong>{{ session.total.total_wrong_answers }}</strong></td>
+                                    <td style="border-right: none; border-top: 1px solid #fff;">
+                                        <strong>{{ session.total.total_percent }}</strong></td>
+                                </tr>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h1 style="color: #fff">Для получения статистики нажмите кнопку "СФОРМИРОВАТЬ"</h1>
+                <h2 style="color: #fff">Получение данных может занимать продолжительное время</h2>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'triumph/js/statistics.js' %}"></script>
+    <script src="{% static 'triumph/js/jquery-ui.min.js' %}"></script>
+{% endblock %}

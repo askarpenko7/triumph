@@ -1,0 +1,119 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="{% static 'triumph/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'triumph/css/jquery-ui.min.css' %}" rel="stylesheet">
+
+    <!--Custom style -->
+    <link href="{% static 'triumph/css/triumph.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" style="display: flex;min-height: 100vh;flex-direction: column;">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <div class="brand">
+                <img class="img-responsive" alt="Triumph Logo" src="{% static 'triumph/img/logo_main.png' %}">
+            </div>
+            <div class="nav-sidebar-menu">
+                <i class="toggle-btn glyphicon glyphicon-menu-hamburger" data-toggle="collapse"
+                   data-target="#menu-content"></i>
+                <span class="" data-toggle="collapse" data-target="#menu-content"></span>
+                <div class="nav-divider"></div>
+                <div class="menu-list">
+                    <ul id="menu-content" class="menu-content collapse out">
+                        <li id="menu-item-challenges" data-toggle="collapse" aria-expanded="true"
+                            data-target="#menu-challenges">
+                            <a id="menu-item-challenges-ref" href="#" class="nav-base-item">Упражнения</a>
+                        </li>
+                        {% regroup challenges by theme as challenges %}
+                        <ul id="menu-challenges" class="sub-menu collapse in" aria-expanded="true">
+                            {% for theme in challenges %}
+                                <li id="theme" data-toggle="collapse" value="{{ theme.grouper.id }}"
+                                    data-target="#{{ theme.grouper.id }}">
+                                    <a href="#" style="margin-left: 5px"> {{ theme.grouper }} </a>
+                                </li>
+                                <ul class="sub-menu collapse" id="{{ theme.grouper.id }}">
+                                    {% regroup theme.list|dictsort:"level" by level as levels %}
+                                    {% for level in levels %}
+                                        <li id="level" class="li-level"
+                                            value="{% url 'triumph_app:challenge' theme.grouper.id level.grouper %}">
+                                            <a href="#" style="margin-left: 10px">
+                                                Уровень: {{ level.grouper }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
+                        </ul>
+                        <div class="nav-divider"></div>
+                        <li class="nav-base-item" id="menu-item-statistic">
+                            <a href="{% url 'statistics_app:empty_statistic'%}">Статистика</a>
+                        </li>
+                        <div class="nav-bottom-mobile">
+                            <div class="nav-divider"></div>
+                            {% if user.is_superuser %}
+                                <span class="exit-btn" style="margin-bottom: 20px"><a href="{% url 'admin:index' %}">Администратор</a></span>
+                                <br><br>
+                            {% endif %}
+                            <li><a href="{% url 'loginsys_app:logout' %}" class="nav-base-item">Выход</a></li>
+                            <div class="nav-divider"></div>
+                        </div>
+
+                    </ul>
+                </div>
+            </div>
+            <div style="flex-grow: 1;"></div>
+            <div class="nav-bottom">
+                <div class="nav-divider"></div>
+                {% if user.is_superuser %}
+                    <span class="exit-btn" style="margin-bottom: 20px"><a
+                            href="{% url 'admin:index' %}">Администратор</a></span>
+                    <br><br>
+                {% endif %}
+                <span class="exit-btn"><a href="{% url 'loginsys_app:logout' %}">Выход</a></span>
+                <div class="nav-divider"></div>
+                <footer>
+                    <p>Онлайн тренажер ментальной арифметики "Триумф", 2017
+                        Является интеллектуальной собственностью смарт-центра Триумф. По всем вопросам
+                        обращаться
+                        oks_alex@mail.ru, +7 (922) 452 51 58</p>
+                </footer>
+            </div>
+
+        </div>
+        <div id="content-root" class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <footer class="mobile-footer">
+            <p>Онлайн тренажер ментальной арифметики "Триумф", 2017
+                Является интеллектуальной собственностью смарт-центра Триумф. По всем вопросам
+                обращаться
+                oks_alex@mail.ru, +7 (922) 452 51 58</p>
+        </footer>
+    </div>
+</div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="{% static 'triumph/js/bootstrap.min.js' %}"></script>
+{% block scripts %}
+{% endblock %}
+</body>
+</html>
