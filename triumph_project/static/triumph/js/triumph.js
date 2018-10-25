@@ -8,6 +8,7 @@
 
 $(document).ready(function () {
     resizeDiv();
+    $("#range-block").hide();
 });
 
 window.onresize = function (event) {
@@ -117,6 +118,7 @@ $(function () {
     $(".li-level").click(function () {
         if ($(this).attr("value") != 0) {
             challenge_url = $(this).attr("value");
+            initSpeedRange()
             addStartButton();
             clearAdditionalViews();
             setBoardMessage("Можем начинать!")
@@ -152,6 +154,7 @@ var expressionsDigits = [];
 var full_expression = "";
 
 function showSequence(sequence) {
+    var s = 1000 / speed;
     expressionsOperators = [];
     expressionsDigits = [];
     isSequenceDisplayed = false;
@@ -176,7 +179,7 @@ function showSequence(sequence) {
     var timerId = setInterval(function () {
         board_text.text(expressions[i]);
         i++;
-    }, 800);
+    }, s);
     setTimeout(function () {
         clearInterval(timerId);
         i = 0;
@@ -187,7 +190,7 @@ function showSequence(sequence) {
         // start_btn.attr("data-role", "replay");
         $("#start_btn").attr("data-role", "replay");
         addAnswerInput();
-    }, ((expressions.length + 1) * 800));
+    }, ((expressions.length + 1) * s));
 }
 
 function answerIs(expressionsDigits, expressionsOperators) {
@@ -263,6 +266,7 @@ function checkAnswer(answer) {
 function clearAdditionalViews() {
     $("#answer-input").remove();
     $("#right-answer-btn").remove();
+
 }
 
 function addCheatButton(answer) {
@@ -329,4 +333,38 @@ function resizeDiv() {
 
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+//-----------------//
+
+var speed = 1;
+var $ruler = $('<div class="rangeslider__ruler" />');
+
+function initSpeedRange() {
+    $("#range-block").show();
+    $('input[type="range"]').rangeslider({
+        polyfill: false,
+        onInit: function (){
+            $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
+            this.$range.prepend($ruler);
+        },
+        onSlideEnd: function (position, value) {
+            if (speed !== value) {
+                speed = value;
+                console.log(speed);
+            }
+        }
+    });
+}
+
+function getRulerRange(min, max, step) {
+  var range = '';
+  var i = 1;
+
+  while (i <= max) {
+    range += i + ' ';
+    i = i + step;
+  }
+  return range;
 }

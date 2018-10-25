@@ -212,7 +212,7 @@
     width: 126px;
     height: 126px;
     border: none;
-    margin-top: 5rem;
+    margin-top: 0;
 }
 
 .btn-start:hover {
@@ -290,6 +290,10 @@
     .nav-bottom-mobile {
         display: none;
     }
+
+    .btn-start {
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 767px) {
@@ -332,6 +336,10 @@
 
     .mobile-footer {
         display: block;
+    }
+
+    .btn-start {
+        margin-top: 5rem;
     }
 }
 

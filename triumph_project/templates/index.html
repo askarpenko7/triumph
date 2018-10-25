@@ -25,10 +25,16 @@
             </div>
         </div>
 
-        <div id="under-board"></div>
+        <div id="under-board">
+            <div id="range-block" style="max-width: 200px; margin-top: 5px;">
+                <h2 style="font-weight: 300; text-align: left">Скорость</h2>
+                <input type="range" min="1" max="3" step="1" value="1">
+            </div>
+        </div>
     </div>
 {% endblock %}
 
 {% block scripts %}
     <script src="{% static 'triumph/js/triumph.js' %}"></script>
+    <script src="{% static 'triumph/js/rangeslider.min.js' %}"></script>
 {% endblock %}
